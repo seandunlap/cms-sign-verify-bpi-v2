@@ -5,17 +5,19 @@ IFS=$'\n\t'
 CM_DEVICE_CERT_DER="cm_device_cert.der"
 CM_DEVICE_PRIV="cm_device_private.pem"
 AUTH_REQUEST_FILE="auth_request_data.txt"
-OUTPUT_CMS_FILE="auth_request_cms.p7s"
-
-# Convert hex → binary DER
-xxd -r -p auth_request_data.txt > auth_request_data.bin
+OUTPUT_CMS_FILE="cms.der"
+CM_DEVICE_CERT_PEM="cm_device_cert.pem"
 
 for f in "$CM_DEVICE_CERT_DER" "$CM_DEVICE_PRIV" "$AUTH_REQUEST_FILE"; do
   [[ -f "$f" ]] || { echo "Error: '$f' not found"; exit 1; }
 done
 
+# Convert hex → binary DER
+echo converting hex auth_request_data.txt to binary auth_request_data.bin for openssl
+xxd -r -p auth_request_data.txt > auth_request_data.bin
+
 # Convert DER → PEM in a temp file
-CM_DEVICE_CERT_PEM=$(mktemp /tmp/cm_cert.XXXXXX.pem)
+
 trap 'rm -f "$CM_DEVICE_CERT_PEM"' EXIT
 openssl x509 -inform DER -in "$CM_DEVICE_CERT_DER" -out "$CM_DEVICE_CERT_PEM"
 echo "Converted DER → PEM: $CM_DEVICE_CERT_PEM"
@@ -28,10 +30,13 @@ openssl cms -sign \
   -out "$OUTPUT_CMS_FILE" \
   -outform DER \
   -noattr \
+  -nocerts \
   -binary
 echo "Signed CMS output → $OUTPUT_CMS_FILE"
 
-xxd -C "$OUTPUT_CMS_FILE"
+echo "Hex dump of CMS output:"
+xxd -c 16 -groupsize 1 -a $OUTPUT_CMS_FILE | cut -d' ' -f1-17                                                                                                                                                         
+#openssl asn1parse -in auth_request_cms.p7s -inform DER
 
 # Verify against a CA bundle
 #openssl cms -verify \

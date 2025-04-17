@@ -30,12 +30,17 @@ openssl cms -sign \
   -out "$OUTPUT_CMS_FILE" \
   -outform DER \
   -noattr \
-  -nocerts \
   -binary 
 echo "Signed CMS output → $OUTPUT_CMS_FILE"
 
 echo "Hex dump of CMS signature:"
-openssl asn1parse -in "$OUTPUT_CMS_FILE" -inform DER | grep HEX | cut -d':' -f4  
+
+xxd cms.der > cms.der.hex
+xxd verify_data.bin > verify_data.bin.hex
+
+echo "Diff of computed CMS signature and verify data:"
+echo "diff cms.der.hex c.hex"
+diff cms.der.hex verify_data.bin.hex
 
 # Verify against a CA bundle
 #openssl cms -verify \

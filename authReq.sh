@@ -20,7 +20,7 @@ xxd -r -p auth_request_data.txt > auth_request_data.bin
 
 trap 'rm -f "$CM_DEVICE_CERT_PEM"' EXIT
 openssl x509 -inform DER -in "$CM_DEVICE_CERT_DER" -out "$CM_DEVICE_CERT_PEM"
-echo "Converted DER → PEM: $CM_DEVICE_CERT_PEM"
+echo "Converted $CM_DEVICE_CERT_DER → PEM: $CM_DEVICE_CERT_PEM"
 
 # Sign (binary mode if needed)
 openssl cms -sign \
@@ -31,12 +31,11 @@ openssl cms -sign \
   -outform DER \
   -noattr \
   -nocerts \
-  -binary
+  -binary 
 echo "Signed CMS output → $OUTPUT_CMS_FILE"
 
-echo "Hex dump of CMS output:"
-xxd -c 16 -groupsize 1 -a $OUTPUT_CMS_FILE | cut -d' ' -f1-17                                                                                                                                                         
-#openssl asn1parse -in auth_request_cms.p7s -inform DER
+echo "Hex dump of CMS signature:"
+openssl asn1parse -in "$OUTPUT_CMS_FILE" -inform DER | grep HEX | cut -d':' -f4  
 
 # Verify against a CA bundle
 #openssl cms -verify \

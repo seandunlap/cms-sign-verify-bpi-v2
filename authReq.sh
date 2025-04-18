@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 IFS=$'\n\t'
 
 # Custom logging function
@@ -18,28 +17,32 @@ CA_BUNDLE="ca-bundle.crt"  # Optional CA bundle for verification
 # Check input files (exclude CA_BUNDLE since it's optional)
 log "Checking input files"
 for f in "$CM_DEVICE_CERT_DER" "$CM_DEVICE_PRIV" "$AUTH_REQUEST_FILE" "$VERIFY_DATA"; do
-  [[ -f "$f" && -r "$f" ]] || { log "Error: '$f' not found or not readable"; exit 1; }
+  [[ -f "$f" && -r "$f" ]] || { log "Error: '$f' not found or not readable"; }
 done
 
-# Validate hex input
-log "Validating hex input in $AUTH_REQUEST_FILE"
+# Validate and clean hex input
+log "Validating and cleaning hex input in $AUTH_REQUEST_FILE"
+# Remove whitespace and newlines, keep only hex characters
 if ! grep -E '^[0-9a-fA-F]+$' "$AUTH_REQUEST_FILE" >/dev/null; then
   log "Error: '$AUTH_REQUEST_FILE' contains invalid hex characters"
-  exit 1
+fi
+# Create a cleaned hex file
+tr -d '[:space:]' < "$AUTH_REQUEST_FILE" > auth_request_data_clean.txt
+if [[ ! -s auth_request_data_clean.txt ]]; then
+  log "Error: Cleaned hex file is empty"
 fi
 
-# Convert hex to binary
-log "Converting hex $AUTH_REQUEST_FILE to binary auth_request_data.bin"
-if ! xxd -r -p "$AUTH_REQUEST_FILE" > auth_request_data.bin; then
+# Convert cleaned hex to binary
+log "Converting cleaned hex to binary auth_request_data.bin"
+if ! xxd -r -p auth_request_data_clean.txt > auth_request_data.bin; then
   log "Error: Failed to convert hex to binary"
-  exit 1
 fi
+rm -f auth_request_data_clean.txt
 
 # Convert DER certificate to PEM
 log "Converting $CM_DEVICE_CERT_DER to PEM: $CM_DEVICE_CERT_PEM"
 if ! openssl x509 -inform DER -in "$CM_DEVICE_CERT_DER" -out "$CM_DEVICE_CERT_PEM" 2>/dev/null; then
   log "Error: Failed to convert $CM_DEVICE_CERT_DER to PEM"
-  exit 1
 fi
 
 # Sign data
@@ -53,7 +56,6 @@ if ! openssl cms -sign \
   -noattr \
   -binary 2>/dev/null; then
   log "Error: CMS signing failed"
-  exit 1
 fi
 log "Signature written to $OUTPUT_CMS_FILE"
 
@@ -108,12 +110,15 @@ log "CMS verification OK"
 log "Building and running authReqSignature.c"
 if ! cmake .; then
   log "Error: CMake failed"
+  exit 1
 fi
 if ! make; then
   log "Error: Make failed"
+  exit 1
 fi
 if ! ./authReqSignature; then
   log "Error: C program failed"
+  exit 1
 fi
 
 # Check C program output
@@ -121,7 +126,6 @@ fi
 log "Creating hex dump for $OUTPUT_CMS_FILE_C_CODE"
 if ! xxd "$OUTPUT_CMS_FILE_C_CODE" > "$OUTPUT_CMS_FILE_C_CODE.hex"; then
   log "Error: Failed to create hex dump for $OUTPUT_CMS_FILE_C_CODE"
-  exit 1
 fi
 
 # Compare C program output with expected

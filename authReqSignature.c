@@ -201,6 +201,19 @@ int main(void) {
         return 1;
     }
 
+    /* Print CMS details */
+    STACK_OF(X509) *signers = CMS_get0_signers(cms2);
+    if (signers) {
+        printf("Number of signers: %d\n", sk_X509_num(signers));
+        for (int i = 0; i < sk_X509_num(signers); i++) {
+            X509 *signer = sk_X509_value(signers, i);
+            char *subject = X509_NAME_oneline(X509_get_subject_name(signer), NULL, 0);
+            printf("Signer %d subject: %s\n", i, subject);
+            OPENSSL_free(subject);
+        }
+        sk_X509_free(signers);
+    }    
+
     /* 7) Cleanup */
     // Free allocated resources and clean up OpenSSL
     CMS_ContentInfo_free(cms2);

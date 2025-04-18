@@ -19,6 +19,9 @@
 #define CMS_OUT_DER "auth_request_cms.p7s"
 
 int main(void) {
+
+    printf("Running authReqSignature.c\n");
+
     /* 1) Initialize OpenSSL */
     OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CRYPTO_STRINGS |
                         OPENSSL_INIT_ADD_ALL_CIPHERS    |
@@ -27,6 +30,7 @@ int main(void) {
     OpenSSL_add_all_algorithms();
 
     /* 2) Load the signer certificate (DER→X509) */
+    printf("Loading signer certificate %s\n",CERT_DER);
     FILE *f = fopen(CERT_DER, "rb");
     if (!f) { perror("Opening DER certificate"); return 1; }
     X509 *cert = d2i_X509_fp(f, NULL);

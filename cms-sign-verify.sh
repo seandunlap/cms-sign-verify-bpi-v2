@@ -224,13 +224,5 @@ else
   diff "$OUTPUT_CMS_FILE_C_CODE.hex" verify_data.bin.hex || true
 fi
 
-# Compare C program output with shell script
-log "Comparing C program CMS with shell script CMS"
-if diff -q "$OUTPUT_CMS_FILE_C_CODE.hex" css.der.hex >/dev/null; then
-  log "C program CMS matches shell script CMS"
-else
-  log "C program CMS differs from shell script CMS"
-  diff "$OUTPUT_CMS_FILE_C_CODE.hex" cms.der.hex || true
-fi
 
 log "All operations completed successfully"

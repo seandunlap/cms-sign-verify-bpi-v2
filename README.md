@@ -22,9 +22,6 @@ The Bash script ensures that the CMS signatures produced by both implementations
 
 - **Operating System**: Linux or Unix-like system (e.g., Ubuntu, CentOS).
 - **Dependencies**:
-  - **OpenSSL**: For the Bash script (\`openssl\` command) and C program (OpenSSL development libraries).
-    - Install on Ubuntu: \`sudo apt-get install openssl libssl-dev\`
-    - Install on CentOS: \`sudo yum install openssl openssl-devel\`
   - **CMake**: For building the C program.
     - Install: \`sudo apt-get install cmake\` or \`sudo yum install cmake\`
   - **Make**: For compiling the C program.
@@ -93,7 +90,7 @@ The Bash script ensures that the CMS signatures produced by both implementations
    \`\`\`bash
    cmake .
    make
-   ./authReqSignature
+   ./cms_sign_verify
    \`\`\`
    The C program:
    - Reads and validates the hex input.
@@ -115,13 +112,6 @@ The Bash script ensures that the CMS signatures produced by both implementations
      \`\`\`
 
 ## Error Handling
-
-The Bash script is designed to exit automatically on any failure:
-- **File Checks**: Exits if required input files are missing or unreadable.
-- **Input Validation**: Exits if the hex input contains invalid characters.
-- **Command Failures**: Exits if any command (e.g., \`xxd\`, \`openssl\`, \`cmake\`, \`make\`) fails.
-- **Output Comparisons**: Exits if the CMS outputs differ from each other or the expected result.
-- **Logging**: Errors are logged with timestamps for debugging.
 
 The C program includes robust error handling:
 - Validates hex input and certificate/key compatibility.
@@ -176,7 +166,7 @@ The C program includes robust error handling:
      - Check versions:
        \`\`\`bash
        openssl version
-       ldd ./authReqSignature | grep libcrypto
+       ldd ./cms_sign_verify | grep libcrypto
        \`\`\`
      - Rebuild the C program against the system’s OpenSSL version.
 
@@ -184,10 +174,10 @@ The C program includes robust error handling:
 
 \`\`\`cmake
 cmake_minimum_required(VERSION 3.10)
-project(authReqSignature C)
+project(cms_sign_verify C)
 find_package(OpenSSL REQUIRED)
-add_executable(authReqSignature cms_sign_verify.c)
-target_link_libraries(authReqSignature OpenSSL::SSL OpenSSL::Crypto)
+add_executable(cms_sign_verify cms_sign_verify.c)
+target_link_libraries(cms_sign_verify OpenSSL::SSL OpenSSL::Crypto)
 \`\`\`
 
 ## Security Considerations

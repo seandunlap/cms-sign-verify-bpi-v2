@@ -31,6 +31,9 @@ default_target: all
 
 .SUFFIXES: .hpux_make_needs_suffix_list
 
+# Produce verbose output by default.
+VERBOSE = 1
+
 # Command-line flag to silence nested $(MAKE).
 $(VERBOSE)MAKESILENT = -s
 
@@ -60,7 +63,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /Users/sd903151/Workspace/authReq
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/sd903151/Workspace/authReq
+CMAKE_BINARY_DIR = /Users/sd903151/workspace/authReq
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +90,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sd903151/Workspace/authReq/CMakeFiles /Users/sd903151/Workspace/authReq//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sd903151/workspace/authReq/CMakeFiles /Users/sd903151/workspace/authReq//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sd903151/Workspace/authReq/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sd903151/workspace/authReq/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -130,41 +133,54 @@ openssl/fast:
 .PHONY : openssl/fast
 
 #=============================================================================
-# Target rules for targets named authReqSignature
+# Target rules for targets named cms_sign_verify
 
 # Build rule for target.
-authReqSignature: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 authReqSignature
-.PHONY : authReqSignature
+cms_sign_verify: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cms_sign_verify
+.PHONY : cms_sign_verify
 
 # fast build rule for target.
-authReqSignature/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/authReqSignature.dir/build.make CMakeFiles/authReqSignature.dir/build
-.PHONY : authReqSignature/fast
+cms_sign_verify/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cms_sign_verify.dir/build.make CMakeFiles/cms_sign_verify.dir/build
+.PHONY : cms_sign_verify/fast
 
-authReqSignature.o: authReqSignature.c.o
-.PHONY : authReqSignature.o
+#=============================================================================
+# Target rules for targets named validate_openssl
+
+# Build rule for target.
+validate_openssl: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 validate_openssl
+.PHONY : validate_openssl
+
+# fast build rule for target.
+validate_openssl/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/validate_openssl.dir/build.make CMakeFiles/validate_openssl.dir/build
+.PHONY : validate_openssl/fast
+
+cms_sign_verify.o: cms_sign_verify.c.o
+.PHONY : cms_sign_verify.o
 
 # target to build an object file
-authReqSignature.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/authReqSignature.dir/build.make CMakeFiles/authReqSignature.dir/authReqSignature.c.o
-.PHONY : authReqSignature.c.o
+cms_sign_verify.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cms_sign_verify.dir/build.make CMakeFiles/cms_sign_verify.dir/cms_sign_verify.c.o
+.PHONY : cms_sign_verify.c.o
 
-authReqSignature.i: authReqSignature.c.i
-.PHONY : authReqSignature.i
+cms_sign_verify.i: cms_sign_verify.c.i
+.PHONY : cms_sign_verify.i
 
 # target to preprocess a source file
-authReqSignature.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/authReqSignature.dir/build.make CMakeFiles/authReqSignature.dir/authReqSignature.c.i
-.PHONY : authReqSignature.c.i
+cms_sign_verify.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cms_sign_verify.dir/build.make CMakeFiles/cms_sign_verify.dir/cms_sign_verify.c.i
+.PHONY : cms_sign_verify.c.i
 
-authReqSignature.s: authReqSignature.c.s
-.PHONY : authReqSignature.s
+cms_sign_verify.s: cms_sign_verify.c.s
+.PHONY : cms_sign_verify.s
 
 # target to generate assembly for a file
-authReqSignature.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/authReqSignature.dir/build.make CMakeFiles/authReqSignature.dir/authReqSignature.c.s
-.PHONY : authReqSignature.c.s
+cms_sign_verify.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cms_sign_verify.dir/build.make CMakeFiles/cms_sign_verify.dir/cms_sign_verify.c.s
+.PHONY : cms_sign_verify.c.s
 
 # Help Target
 help:
@@ -175,10 +191,11 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... openssl"
-	@echo "... authReqSignature"
-	@echo "... authReqSignature.o"
-	@echo "... authReqSignature.i"
-	@echo "... authReqSignature.s"
+	@echo "... validate_openssl"
+	@echo "... cms_sign_verify"
+	@echo "... cms_sign_verify.o"
+	@echo "... cms_sign_verify.i"
+	@echo "... cms_sign_verify.s"
 .PHONY : help
 
 

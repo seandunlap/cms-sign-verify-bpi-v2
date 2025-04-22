@@ -60,7 +60,7 @@ if(WIN32)
 else()
     set(OPENSSL_CONFIGURE_COMMAND ./config --prefix=${OPENSSL_INSTALL_DIR} --openssldir=${OPENSSL_INSTALL_DIR}/ssl no-shared)
     set(OPENSSL_BUILD_COMMAND make -j${CMAKE_BUILD_PARALLEL_LEVEL})
-    set(OPENSSL_INSTALL_COMMAND make install)
+    set(OPENSSL_INSTALL_COMMAND make)
 endif()
 
 # Configure ExternalProject to download and build OpenSSL

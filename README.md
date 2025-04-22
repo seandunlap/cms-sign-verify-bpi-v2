@@ -1,13 +1,12 @@
-cat << EOF > README.md
 # CMS Signing and Verification Project
 
 This project implements the CMS signature calculation from the BPI+v2 exmaple Auth-Req message provided in the DOCSIS security spec. 
 
 ## QuickStart
 
-1. **Run the Bash Script**:
-   \`\`\`bash
-   ./cms-sign-verify.sh
+1. **Just run the Shell Script**:
+
+   $ ./cms-sign-verify.sh
 
 ## Project Overview
 
@@ -24,17 +23,22 @@ Both shell script and C file components:
 
 ## Prerequisites
 
-- **Operating System**: Linux or Unix-like system (e.g., OSx, Ubuntu, CentOS).
+- **Operating System**: Linux or OSx.
 - **Dependencies**:
   - **CMake**: For building the C program.
-    - Install: \`sudo apt-get install cmake\` or \`sudo yum install cmake\ or  \`brew install cmake\`
+    - Install: \`sudo apt-get install cmake\` or \`sudo yum install cmake\` or  \`brew install cmake\`
   - **Make**: For compiling the C program.
     - Install: \`sudo apt-get install make\` or \`sudo yum install make\` or \`brew install cmake make\`
   - **xxd**: For hex-to-binary conversion in the Bash script.
-    - Usually included with \`vim\`: \`sudo apt-get install vim\` or \`sudo yum install vim\`
-- **Hardware**: Standard system with sufficient memory and disk space.
+    - Usually included with \`vim\`: \`sudo apt-get install vim\` or \`sudo yum install vim\` or \`brew install vim\`
 
-
+- **Verify dependency install**:
+  $ cmake --version
+  $ gmake --version  # or make --version
+  $ xxd --version
+  $ ggrep --version  # or grep --version
+  $ gtr --version   # or tr --version
+  $ diff --version
 
 ## Project Structure
 
@@ -48,34 +52,34 @@ Both shell script and C file components:
   - \`verify_data.bin\`: Expected CMS output.
   - \`ca-bundle.crt\` (optional): CA bundle for verification.
 - Output files (generated):
-  - \`cms.der\`: CMS signed message from the Bash script.
+  - \`cms-computed-by-shell-script.der\`: CMS signed message from the Bash script.
   - \`cms-computed-by-C-code.der\`: CMS signed message from the C program.
-  - \`cms.der.hex\`, \`cms-computed-by-C-code.der.hex\`, \`verify_data.bin.hex\`: Hex dumps for comparison.
+  - \`cms-computed-by-shell-script.der.hex\`, \`cms-computed-by-C-code.der.hex\`, \`verify_data.bin.hex\`: Hex dumps for comparison.
   - \`auth_request_data.bin\`: Auth-Req message data in binary (from spec example) over which the signature is computed.
   - \`cm_device_cert.pem\`: PEM-converted (from cm_device_cert.der) certificate.
 
 ## Usage
 
 1. **Run the Bash Script**:
-   \`\`\`bash
-   ./cms-sign-verify.sh
-   \`\`\`
+   
+   $ ./cms-sign-verify.sh
+   
    The script:
-   - Builds and runs the C program to produce \`cms-computed-by-C-code.der\`.
-   - Validates and cleans the hex input.
-   - Converts the hex input to binary.
+   - Downloads and builds OpenSSL (first time only)
+   - Builds and runs the C program to produce the signature in \`cms-computed-by-C-code.der\`.
    - Converts the DER certificate to PEM.
-   - Signs the data using OpenSSL to produce \`cms.der\`.
-   - Verifies the CMS signature, using \`ca-bundle.crt\` if available or skipping CA verification otherwise.
-   - Compares both CMS outputs with each other and \`verify_data.bin\`.
+   - Signs the data using OpenSSL to produce \`cms-computed-by-C-code.der\`.
+   - Verifies the CMS signature using \`ca-bundle.crt\`.
+   - Compares bash script computed CMS against C computed CMS against and against the spec example expected value in \`verify_data.bin\`.
 
-2. **Run the C Program Directly** (Optional):
+2. **Run the C Program by itself**:
+
    Build and execute the C program:
-   \`\`\`bash
-   cmake .
-   make
-   ./cms_sign_verify
-   \`\`\`
+
+    $ cmake .
+    $ make
+    $ ./cms_sign_verify
+
    The C program:
    - Reads and validates the hex input.
    - Signs the data using the certificate and private key.

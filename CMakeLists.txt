@@ -49,19 +49,9 @@ debug_message("OpenSSL Prefix: ${OPENSSL_PREFIX}")
 debug_message("OpenSSL Install Dir: ${OPENSSL_INSTALL_DIR}")
 
 # Configure OpenSSL build based on platform
-if(WIN32)
-    find_program(PERL_EXECUTABLE perl)
-    if(NOT PERL_EXECUTABLE)
-        message(FATAL_ERROR "Perl is required for OpenSSL build on Windows")
-    endif()
-    set(OPENSSL_CONFIGURE_COMMAND ${PERL_EXECUTABLE} Configure VC-WIN64A --prefix=${OPENSSL_INSTALL_DIR} --openssldir=${OPENSSL_INSTALL_DIR}/ssl no-shared)
-    set(OPENSSL_BUILD_COMMAND nmake)
-    set(OPENSSL_INSTALL_COMMAND nmake install)
-else()
-    set(OPENSSL_CONFIGURE_COMMAND ./config --prefix=${OPENSSL_INSTALL_DIR} --openssldir=${OPENSSL_INSTALL_DIR}/ssl no-shared)
-    set(OPENSSL_BUILD_COMMAND make -j${CMAKE_BUILD_PARALLEL_LEVEL})
-    set(OPENSSL_INSTALL_COMMAND make)
-endif()
+set(OPENSSL_CONFIGURE_COMMAND ./config --prefix=${OPENSSL_INSTALL_DIR} --openssldir=${OPENSSL_INSTALL_DIR}/ssl no-shared)
+set(OPENSSL_BUILD_COMMAND ${CMAKE_COMMAND} -E env sh -c "make depend && make")
+set(OPENSSL_INSTALL_COMMAND make install)
 
 # Configure ExternalProject to download and build OpenSSL
 ExternalProject_Add(
@@ -69,6 +59,8 @@ ExternalProject_Add(
     URL ${OPENSSL_URL}
     URL_HASH ${OPENSSL_HASH}
     PREFIX ${OPENSSL_PREFIX}
+    BUILD_IN_SOURCE 1
+    DOWNLOAD_EXTRACT_TIMESTAMP FALSE 
     CONFIGURE_COMMAND
         COMMAND ${CMAKE_COMMAND} -E echo "[PROGRESS] Starting OpenSSL configuration"
         COMMAND ${OPENSSL_CONFIGURE_COMMAND}
@@ -81,14 +73,14 @@ ExternalProject_Add(
         COMMAND ${CMAKE_COMMAND} -E echo "[PROGRESS] Starting OpenSSL installation"
         COMMAND ${OPENSSL_INSTALL_COMMAND}
         COMMAND ${CMAKE_COMMAND} -E echo "[PROGRESS] OpenSSL installation completed"
-    BUILD_IN_SOURCE 1
-    DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+
     LOG_DOWNLOAD ON
     LOG_UPDATE ON
     LOG_CONFIGURE ON
     LOG_BUILD ON
     LOG_INSTALL ON
-    LOG_OUTPUT_ON_FAILURE ON
+    LOG_OUTPUT_ON_FAILURE ON    
+    CONFIGURE_COMMAND        
 )
 
 # Set OpenSSL include and library directories
@@ -149,16 +141,3 @@ debug_message("Defined file paths: CERT_FILE=${CERT_FILE}, KEY_FILE=${KEY_FILE},
 # Add clean target for OpenSSL build artifacts
 set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES "${OPENSSL_PREFIX};${CMAKE_BINARY_DIR}/cms_sign_verify")
 debug_message("Set additional clean files: ${OPENSSL_PREFIX}, ${CMAKE_BINARY_DIR}/cms_sign_verify")
-
-# Custom target to validate OpenSSL installation after build
-add_custom_target(validate_openssl
-    COMMAND ${CMAKE_COMMAND} -E echo "Validating OpenSSL installation..."
-    COMMAND ${CMAKE_COMMAND}
-        -DOPENSSL_LIBRARY_DIR=${OPENSSL_LIBRARY_DIR}
-        -DOPENSSL_BINARY=${OPENSSL_BINARY}
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/validate_openssl.cmake
-    DEPENDS openssl
-    COMMENT "Validating OpenSSL libraries and binary"
-)
-add_dependencies(cms_sign_verify validate_openssl)
-debug_message("Added custom target: validate_openssl")

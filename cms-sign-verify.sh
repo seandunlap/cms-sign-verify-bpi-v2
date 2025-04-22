@@ -27,9 +27,9 @@ ROOT_CERT_DER="root_certificate.der"
 INTERMEDIATE_CERT_DER="ca_cert.der"
 ROOT_CERT_PEM="root_certificate.pem"
 INTERMEDIATE_CERT_PEM="ca_cert.pem"
-OPENSSL_DIR="./build/openssl/install"
-OPENSSL_BIN="${OPENSSL_DIR}/bin/openssl"
-OPENSSL_LIB_DIR="${OPENSSL_DIR}/lib"
+OPENSSL_BIN_DIR="build/openssl/install/bin"
+OPENSSL_BIN="${OPENSSL_BIN_DIR}/openssl"
+OPENSSL_LIB_DIR="build/openssl/install/lib/"
 OPENSSL_LOG_DIR="./build/openssl/src/openssl-stamp"
 VERIFIED_CONTENT="verified_content.bin"
 
@@ -77,8 +77,8 @@ for lib in "$OPENSSL_LIB_DIR/libssl.a" "$OPENSSL_LIB_DIR/libcrypto.a"; do
     ls -l "$OPENSSL_LIB_DIR" || true
     exit 1
   fi
-done
-log "OpenSSL installation verified: $OPENSSL_BIN, $OPENSSL_LIB_DIR/libssl.a, $OPENSSL_LIB_DIR/libcrypto.a"
+fi
+
 
 # Check input files (exclude optional CA_BUNDLE, ROOT_CERT_DER, INTERMEDIATE_CERT_DER)
 log "Checking input files"

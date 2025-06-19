@@ -33,12 +33,12 @@ Both shell script and C file components:
     - Usually included with \`vim\`: \`sudo apt-get install vim\` or \`sudo yum install vim\` or \`brew install vim\`
 
 - **Verify dependency install**:
-  $ cmake --version
-  $ gmake --version  # or make --version
-  $ xxd --version
-  $ ggrep --version  # or grep --version
-  $ gtr --version   # or tr --version
-  $ diff --version
+  - $ cmake --version
+  - $ gmake --version  # or make --version
+  - $ xxd --version
+  - $ ggrep --version  # or grep --version
+  - $ gtr --version   # or tr --version
+  - $ diff --version
 
 ## Project Structure
 
@@ -76,9 +76,9 @@ Both shell script and C file components:
 
    Build and execute the C program:
 
-    $ cmake .
-    $ make
-    $ ./cms_sign_verify
+    - $ cmake .
+    - $ make
+    - $ ./cms_sign_verify
 
    The C program:
    - Reads and validates the hex input.

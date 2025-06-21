@@ -2,7 +2,7 @@
 # cms-sign-verify.sh: Perform CMS sign/verify and compare with C program output
 
 set -euo pipefail
-IFS=$'\n\t'
+IFS="$(printf '\n\t')"
 
 # Logging helper
 log() { echo "[$(date +'%T')] $*" >&2; }
